@@ -33,7 +33,7 @@
     display: inline-block;
     pointer-events: all;
     border-radius: 5px;
-    box-shadow: rgba(149, 157, 165, 0.5) 0px 8px 24px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 8px 24px;
     backdrop-filter: blur(10px);
 }
 
@@ -52,7 +52,7 @@ button {
     padding-bottom: 3px;
     border-width: 1px 1px 3px 1px;
     cursor: pointer;
-    box-shadow: rgba(149, 157, 165, 0.5) 0px 8px 24px;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 24px;
     transition: all 0.10s ease;
 }
 
@@ -74,7 +74,8 @@ button:active {
     margin-left: 15px;
 }
 
-#money, #date {
+#money,
+#date {
     float: right;
 }
 
@@ -90,11 +91,16 @@ button:active {
     background: #ffffffbd;
     margin: 15px;
     margin-bottom: 65px;
-    box-shadow: rgba(149, 157, 165, 0.5) 0px 8px 24px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 8px 24px;
     backdrop-filter: blur(10px);
+    display: none;
+    animation-name: bounceInUp;
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
 }
 
-.right, .left {
+.right,
+.left {
     width: fit-content;
     height: 25dvw;
     float: left;
@@ -120,4 +126,49 @@ button:active {
     text-align: left;
     display: block;
     margin-top: 5px;
+}
+
+.buildTab {
+    display: none;
+}
+
+@keyframes bounceInUp {
+    0% {
+        transform: translate3d(0, 200px, 0);
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+        opacity: 0;
+    }
+
+    60% {
+        transform: translate3d(0, -20px, 0);
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+        opacity: 1;
+    }
+
+    75% {
+        transform: translate3d(0, 10px, 0);
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    }
+
+    90% {
+        transform: translate3d(0, -5px, 0);
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0);
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    }
+}
+
+@keyframes slideOutDown {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(100%);
+    }
 }

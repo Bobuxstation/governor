@@ -17,43 +17,45 @@
     <script type="text/javascript" src="deps/ShaderPass.js"></script>
     <script type="text/javascript" src="deps/GLTFLoader.js"></script>
     <script type="text/javascript" src="deps/RenderPass.js"></script>
+    <script type="text/javascript" src="deps/MTLLoader.js"></script>
+    <script type="text/javascript" src="deps/OBJLoader.js"></script>
 
     <script type="text/javascript" src="js/index.js" defer></script>
+    <script type="text/javascript" src="js/tool.js" defer></script>
     <script type="text/javascript" src="js/definitions.js" defer></script>
+    <script type="text/javascript" src="js/simulations.js" defer></script>
     <script type="text/javascript" src="js/scene.js" defer></script>
 </head>
 
 <body>
     <div class="tab" id="build">
         <div class="left">
-            <button>Transport</button>
-            <button>Zoning</button>
-            <button>Facility</button>
-            <button>Services</button>
-            <button>Search</button>
+            <button onclick="openTab('Zones', 'buildTab')">Zones</button>
+            <button onclick="openTab('Transport', 'buildTab')">Transport</button>
         </div>
         <div class="right">
-            <button>Road</button>
-            <button>Bus Stop</button>
-            <button>Housing</button>
-            <button>Commercial</button>
-            <button>Industrial</button>
-            <button>Farm</button>
-            <button>Mayor Office</button>
-            <button>Elementary School</button>
-            <button>Middle School</button>
-            <button>Library</button>
-            <button>Police Station</button>
-            <button>Fire Station</button>
-            <button>Clinic</button>
-            <button>Hospital</button>
-            <button>Post Office</button>
+            <div class="buildTab" id="Zones" style="display: block;">
+                <button onclick="setTool('housing', 'zones')">Housing</button>
+                <button onclick="setTool('commercial', 'zones')">Commercial</button>
+                <button onclick="setTool('industrial', 'zones')">Industrial</button>
+                <button onclick="setTool('farm', 'zones')">Farm</button>
+            </div>
+            <div class="buildTab" id="Transport">
+                <button onclick="setTool('', 'road')">Road</button>
+                <button>Bus Stop</button>
+            </div>
         </div>
+    </div>
+    <div class="tab right" id="menu">
+        <button>Quit</button>
+        <button>Save</button>
+        <button>Load</button>
+        <button>Take Screenshot</button>
     </div>
     <div id="uiBottom">
         <div id="tools">
-            <button>Menu</button>
-            <button>Build</button>
+            <button onclick="openTab('menu', 'tab', true)">Menu</button>
+            <button onclick="openTab('build', 'tab', true)">Build</button>
             <button>Demolish</button>
             <button>Stats</button>
         </div>

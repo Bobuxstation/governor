@@ -11,6 +11,7 @@ function newBlankScene(terrainSize, seed) {
             let random2 = mulberry32(parseInt(`${index}${seed}`));
             let type = 0; // plains
             let additionalData = {};
+            let height = parseFloat(ImprovedNoise.noise(x / 20, seed, y / 20).toFixed(3));
 
             if (x == Math.floor(terrainSize / 2)) {
                 type = 2; // road
@@ -21,13 +22,32 @@ function newBlankScene(terrainSize, seed) {
                 }
             }
 
-            scene[x][y] = { type: type, height: ImprovedNoise.noise(x / 12, seed, y / 12), ...additionalData };
+            scene[x][y] = { type: type, index: index, height: height, ...additionalData };
             index++;
         }
     }
 
     return scene;
 };
+
+// load obj building models
+async function loadWMat(location) {
+    let mtlloader = new THREE.MTLLoader();
+    loaded[`${location}.mtl`] ??= await mtlloader.loadAsync(`${location}.mtl`)
+
+    let objloader = new THREE.OBJLoader();
+    objloader.setMaterials(loaded[`${location}.mtl`]);
+    loaded[`${location}.obj`] ??= await objloader.loadAsync(`${location}.obj`);
+
+    let object = loaded[`${location}.obj`].clone();
+    object.traverse((child) => {
+        if (!child.isMesh) return;
+        child.castShadow = true;
+        child.receiveShadow = true;
+    })
+
+    return object;
+}
 
 async function generateGrid(data) {
     // instance for checkerboard grid
@@ -56,23 +76,38 @@ async function generateGrid(data) {
             instance.setColorAt(index, color);
 
             //spawn things above it
-            let loader = new THREE.GLTFLoader();
+            let gltfloader = new THREE.GLTFLoader();
+
+            //tile mesh pos
+            let posX = (x - (terrainSize / 2));
+            let posZ = (y - (terrainSize / 2));
+            itemData["posX"] = posX;
+            itemData["posY"] = itemData.height;
+            itemData["posZ"] = posZ;
+
             if (itemData.type == 1) {
-                loaded[itemData.foliageType] ??= await loader.loadAsync(itemData.foliageType);
+                loaded[itemData.foliageType] ??= await gltfloader.loadAsync(itemData.foliageType);
 
                 let cloned = loaded[itemData.foliageType].scene.clone();
-                cloned.position.set((x - (terrainSize / 2)), itemData.height, (y - (terrainSize / 2)));
+                cloned.position.set(posX, itemData.height, posZ);
                 cloned.traverse((child) => {
-                    if (child.isMesh) {
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                    }
+                    if (!child.isMesh) return;
+                    child.castShadow = true;
+                    child.receiveShadow = true;
                 })
 
+                meshLocations[index] = cloned;
                 scene.add(cloned);
             } else if (itemData.type == 2) {
                 color.set(0x111111);
                 instance.setColorAt(index, color);
+
+                let object = await loadWMat("assets/roads/road_straight");
+                object.position.set(posX, itemData.height + 0.12, posZ);
+                object.scale.setScalar(0.156);
+
+                meshLocations[index] = object;
+                scene.add(object);
             };
 
             index++;
@@ -80,7 +115,8 @@ async function generateGrid(data) {
     }
 
     scene.add(instance);
-}
+    return instance;
+};
 
 // Set up lights and sky
 function allOfTheLights() {
@@ -97,8 +133,8 @@ function allOfTheLights() {
     dirLight.position.set(0, 1.75, -1.75);
     dirLight.position.multiplyScalar(30);
     dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 2048;
-    dirLight.shadow.mapSize.height = 2048;
+    dirLight.shadow.mapSize.width = 8192;
+    dirLight.shadow.mapSize.height = 8192;
     dirLight.shadow.camera.left = - 50;
     dirLight.shadow.camera.right = 50;
     dirLight.shadow.camera.top = 50;
@@ -128,6 +164,13 @@ function allOfTheLights() {
     sky.material.uniforms.sunPosition.value.copy(sun);
 }
 
-let sceneData = newBlankScene(32, Math.floor(Math.random() * 100000));
-generateGrid(sceneData);
-allOfTheLights();
+let meshLocations, sceneData, gridInstance, worldSeed
+async function initScene() {
+    worldSeed = Math.random();
+    meshLocations = {};
+    sceneData = newBlankScene(32, Math.floor(worldSeed * 100000));
+    gridInstance = await generateGrid(sceneData);
+    allOfTheLights();
+    citizenSimulation(worldSeed);
+};
+initScene()
