@@ -102,7 +102,7 @@ async function generateGrid(data) {
 // Set up lights and sky
 function allOfTheLights() {
     // create hemisphere light
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.5);
     hemiLight.color.setHSL(0.6, 1, 0.6);
     hemiLight.groundColor.setHSL(0.095, 1, 0.75);
     hemiLight.position.set(0, 50, 0);
@@ -114,14 +114,14 @@ function allOfTheLights() {
     dirLight.position.set(0, 1.75, -1.75);
     dirLight.position.multiplyScalar(30);
     dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 8192;
-    dirLight.shadow.mapSize.height = 8192;
-    dirLight.shadow.camera.left = - 50;
+    dirLight.shadow.mapSize.width = 4096;
+    dirLight.shadow.mapSize.height = 4096;
+    dirLight.shadow.camera.left = -50;
     dirLight.shadow.camera.right = 50;
     dirLight.shadow.camera.top = 50;
-    dirLight.shadow.camera.bottom = - 50;
+    dirLight.shadow.camera.bottom = -50;
+    dirLight.shadow.camera.near = 0.5;
     dirLight.shadow.camera.far = 3500;
-    dirLight.shadow.bias = - 0.00001;
     scene.add(dirLight);
 
     // create ambient light
@@ -145,7 +145,7 @@ function allOfTheLights() {
     sky.material.uniforms.sunPosition.value.copy(sun);
 }
 
-let meshLocations, sceneData, gridInstance, worldSeed, citizens;
+let meshLocations, sceneData, gridInstance, worldSeed, citizens = {}, jobs = {};
 async function initScene() {
     worldSeed = Math.random();
     meshLocations = {};

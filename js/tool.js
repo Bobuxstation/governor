@@ -59,6 +59,11 @@ function cleanTileData(tile, resetType = false) {
     if (tile.building) delete tile.building;
     if (tile.zone) delete tile.zone;
     if (tile.foliageType) delete tile.foliageType;
+    if (tile.uuid) delete tile.uuid;
+
+    if (Object.keys(citizens).find(item => item == tile.index)) {
+        delete citizens[tile.index];
+    }
 
     if (resetType & typeof meshLocations[tile.index] != "undefined") {
         animMove(meshLocations[tile.index], false);
@@ -68,22 +73,59 @@ function cleanTileData(tile, resetType = false) {
                 setRoadModel(checkNeighborForRoads(tile["posX"], tile["posZ"], false, true), tile, true);
             });
 
-            if (meshLocations[tile.index]) scene.remove(meshLocations[tile.index])
             setInstanceColor((tile.posX + tile.posZ) % 2 === 0 ? 0x008000 : 0x007000, gridInstance, tile.index);
+            if (meshLocations[tile.index]) {
+                scene.remove(meshLocations[tile.index]);
+                delete meshLocations[tile.index];
+            };
         }, 500);
     } else {
         setInstanceColor((tile.posX + tile.posZ) % 2 === 0 ? 0x008000 : 0x007000, gridInstance, tile.index);
         if (meshLocations[tile.index]) scene.remove(meshLocations[tile.index]);
-    };
+    }
 
-    if (resetType) tile.type = 0; // plains
+    if (resetType) {
+        tile.type = 0; // plains
+        tile.occupied = false;
+    }
 }
 
 // build tab mode
 let tool = {};
 function setTool(type, category) {
+    let toolDiv = document.getElementById("tools");
+    let selectDiv = document.getElementById("toolselected");
+    let toolname = document.getElementById("toolname");
+    let lastmenu = lastTab['tab'];
+
+    renderer.domElement.style.cursor = 'crosshair';
+    toolDiv.style.animation = "slideOutDown 0.25s both";
+    toolname.innerText = `${category}${type ? ` - ${type}` : ""}`;
+    
+    openTab('', 'tab', true);
     tool["type"] = type;
     tool["category"] = category;
+
+    setTimeout(() => {
+        selectDiv.style.display = "block";
+        toolDiv.style.display = "none";
+        toolDiv.style.animation = "";
+    }, 250);
+
+    document.getElementById("hideTool").onclick = () => {
+        selectDiv.style.animation = "slideOutDown 0.25s both";
+        renderer.domElement.style.cursor = 'unset';
+
+        openTab(lastmenu, 'tab', true);
+        tool["type"] = '';
+        tool["category"] = '';
+
+        setTimeout(() => {
+            selectDiv.style.display = "none";
+            selectDiv.style.animation = "";
+            toolDiv.style.display = "block";
+        }, 250);
+    };
 }
 
 // render road model on tile based on neighbors
@@ -147,7 +189,7 @@ async function setRoadModel(directions, tile, isUpdate = false) {
 
     meshLocations[tile.index] = object;
     if (isUpdate) return;
-    
+
     animMove(object, true);
     setTimeout(() => setInstanceColor(0x222222, gridInstance, tile.index), 500);
 }
@@ -160,7 +202,9 @@ function placeRoad(tile) {
     let neighbors = checkNeighborForRoads(tile["posX"], tile["posZ"], false, true);
     setRoadModel(neighbors, tile);
 
-    Object.values(neighbors).forEach(tile => {
-        setRoadModel(checkNeighborForRoads(tile["posX"], tile["posZ"], false, true), tile, true);
-    });
+    setTimeout(() => {
+        Object.values(neighbors).forEach(tile => {
+            setRoadModel(checkNeighborForRoads(tile["posX"], tile["posZ"], false, true), tile, true);
+        });
+    }, 500);
 }

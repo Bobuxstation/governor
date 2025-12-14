@@ -5,10 +5,41 @@ let foliage = [
     'assets/Tree3.glb'
 ];
 
-let houses = [
-    'assets/residential/house-1',
-    'assets/residential/house-2',
-];
+//residential buildings
+let houses = {
+    'assets/residential/house-1': {
+        "level": 2,
+        "slots": 3,
+    },
+    'assets/residential/house-2': {
+        "level": 3,
+        "slots": 4
+    }
+};
+
+//commercial buildings
+let commercial = {
+    'assets/commercial/shop-1': {
+        "level": 1,
+        "slots": 3,
+    }
+};
+
+//industrial buildings
+let industrial = {
+    'assets/commercial/shop-1': {
+        "level": 1,
+        "slots": 3,
+    }
+};
+
+//farm buildings
+let farm = {
+    'assets/farm/farm-1': {
+        "level": 1,
+        "slots": 5,
+    }
+};
 
 //biased random
 function mulberry32(a) {
@@ -19,14 +50,19 @@ function mulberry32(a) {
 }
 
 // open tab
+var lastTab = {};
 function openTab(tabname, tabGroup, doubleClickHide = false) {
     let tabs = document.getElementsByClassName(tabGroup);
+
+    lastTab[tabGroup] = tabname;
     Object.values(tabs).forEach(element => {
         let action = (element.id == tabname) ? "block" : "none";
         let prev = element.style.display;
 
         if (doubleClickHide & prev == action & action == "block") {
             element.style.animation = "slideOutDown 0.25s both";
+            lastTab[tabGroup] = '';
+
             setTimeout(() => {
                 element.style.display = "none";
                 element.style.animation = "bounceInUp 0.5s both";

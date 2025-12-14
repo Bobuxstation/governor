@@ -5,8 +5,9 @@
 
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="scroll.css">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <script type="text/javascript" src="deps/faker.js"></script>
     <script type="text/javascript" src="deps/three.min.js"></script>
     <script type="text/javascript" src="deps/ImprovedNoise.js"></script>
     <script type="text/javascript" src="deps/OrbitControls.js"></script>
@@ -29,42 +30,52 @@
 </head>
 
 <body>
-    <div class="tab" id="build">
-        <div class="left">
-            <button onclick="openTab('Zones', 'buildTab')">Zones</button>
-            <button onclick="openTab('Transport', 'buildTab')">Transport</button>
+    <div id="tabs">
+        <div class="tab" id="build">
+            <div class="left">
+                <button onclick="openTab('Zones', 'buildTab')">Zones</button>
+                <button onclick="openTab('Transport', 'buildTab')">Transport</button>
+            </div>
+            <div class="right">
+                <div class="buildTab" id="Zones" style="display: block;">
+                    <button onclick="setTool('housing', 'zones')">Housing</button>
+                    <button onclick="setTool('commercial', 'zones')">Commercial</button>
+                    <button onclick="setTool('industrial', 'zones')">Industrial</button>
+                    <button onclick="setTool('farm', 'zones')">Farm</button>
+                </div>
+                <div class="buildTab" id="Transport">
+                    <button onclick="setTool('', 'road')">Road</button>
+                </div>
+            </div>
         </div>
-        <div class="right">
-            <div class="buildTab" id="Zones" style="display: block;">
-                <button onclick="setTool('housing', 'zones')">Housing</button>
-                <button onclick="setTool('commercial', 'zones')">Commercial</button>
-                <button onclick="setTool('industrial', 'zones')">Industrial</button>
-                <button onclick="setTool('farm', 'zones')">Farm</button>
-            </div>
-            <div class="buildTab" id="Transport">
-                <button onclick="setTool('', 'road')">Road</button>
-                <button>Bus Stop</button>
-            </div>
+
+        <div class="tab right" id="menu">
+            <button>Quit</button>
+            <button>Save</button>
+            <button>Load</button>
+            <button>Take Screenshot</button>
         </div>
     </div>
-    <div class="tab right" id="menu">
-        <button>Quit</button>
-        <button>Save</button>
-        <button>Load</button>
-        <button>Take Screenshot</button>
-    </div>
-    <div id="uiBottom">
-        <div id="tools">
-            <button onclick="openTab('menu', 'tab', true)">Menu</button>
-            <button onclick="openTab('build', 'tab', true)">Build</button>
-            <button onclick="setTool('', 'demolish')">Demolish</button>
-            <button>Stats</button>
-        </div>
+
+    <div id="uiTop" class="navigation">
         <div id="money">
             <span>Rp100.000.000,00</span>
         </div>
         <div id="date">
             <span>Name - 25 Sep 2067</span>
+        </div>
+    </div>
+
+    <div id="uiBottom" class="navigation">
+        <div id="tools">
+            <button onclick="openTab('menu', 'tab', true)">Menu</button>
+            <button onclick="openTab('build', 'tab', true)">Build</button>
+            <button onclick="setTool('', 'demolish')">Demolish</button>
+            <!-- <button>Stats</button> -->
+        </div>
+        <div id="toolselected" style="display: none;">
+            <button id="hideTool">X</button>
+            <span id="toolname">tool</span>
         </div>
     </div>
 </body>

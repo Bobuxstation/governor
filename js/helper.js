@@ -1,11 +1,14 @@
-
 // building (up) and demolishing (down) animation
 function animMove(target, isUp) {
     const startY = target.position.y;
     const height = target.scale.y;
     const startTime = performance.now();
 
-    spawnSmoke(target.position, 3000);
+    if (!isUp) {
+        spawnSmoke(target.position, 3000);
+        (new Audio("assets/audio/829103__squirrel_404__smasheddemolished-brick-wall-crumblingcaving-in.mp3")).play();
+    };
+    
     function lerpAnim() {
         const t = Math.min((performance.now() - startTime) / 500, 1);
 
@@ -39,7 +42,6 @@ function setInstanceColor(color, instance, index) {
     instance.setColorAt(index, (new THREE.Color()).set(color));
     instance.instanceColor.needsUpdate = true;
 }
-
 
 // generate smoke
 let smokeTexture = (new THREE.TextureLoader()).load("assets/clouds_1.png")
@@ -94,4 +96,34 @@ async function loadWMat(location) {
     })
 
     return object;
+}
+
+function makeUniqueId(array) {
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let maxAttempts = 1000;
+    let attempts = 0;
+    let length = 4;
+    let id;
+
+    function generateId(len) {
+        let result = '';
+        for (let i = 0; i < len; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return result;
+    }
+
+    function idExists(id) {
+        return array.some(obj => obj["uuid"] === id);
+    }
+
+    while (true) {
+        id = generateId(length);
+        if (!idExists(id)) return id;
+        attempts++;
+        if (attempts >= maxAttempts) {
+            length++;
+            attempts = 0;
+        }
+    }
 }
